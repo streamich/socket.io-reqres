@@ -24,7 +24,7 @@ function Server(prefix) {
 Server.prototype = {
 
     setSocket: function(socket) {
-        socket.on(this.prefix + "request", this.process.bind(this));
+        socket.on(this.prefix + "request", this._process.bind(this));
         this.socket = socket;
         return this;
     },
@@ -34,30 +34,30 @@ Server.prototype = {
         return this;
     },
 
-    send: function(frame) {
+    _send: function(frame) {
         this.socket.emit(this.responseEvent, frame);
     },
 
-    process: function(frame) {
+    _process: function(frame) {
         if((typeof frame == "object") && (typeof frame.i != "undefined")) {
             if(typeof frame.m == "string") {
                 var method = frame.m;
                 if(this.methods[method]) {
                     var self = this;
                     this.methods[method](frame.b, function(response) {
-                        self.send({
+                        self._send({
                             i: frame.i,
                             b: response
                         });
                     }, frame);
                 } else {
-                    this.send({
+                    this._send({
                         i: frame.i,
                         e: "no_method"
                     });
                 }
             } else {
-                this.send({
+                this._send({
                     i: frame.i,
                     e: "no_method"
                 });
@@ -85,7 +85,7 @@ Client.prototype = {
 
     setSocket: function(socket) {
         this.socket = socket;
-        socket.on(this.prefix + "response", this.response.bind(this));
+        socket.on(this.prefix + "response", this._response.bind(this));
         return this;
     },
 
@@ -105,7 +105,7 @@ Client.prototype = {
             var self = this;
             this.cbs[this.id] = callback;
             this.timeouts[this.id] = setTimeout((function(id) {
-                return function() { self.error(id); };
+                return function() { self._error(id, "timeout"); };
             })(this.id), this.timeout);
         }
 
@@ -115,21 +115,21 @@ Client.prototype = {
         this.id %= 1000;
     },
 
-    response: function(frame) {
+    _response: function(frame) {
         if((typeof frame == "object") && (typeof frame.i != "undefined")) {
             var id = frame.i;
             if(this.cbs[id]) {
                 if(frame.e) { // Error.
-                    this.cbs[id](frame.e);
+                    this._error(id, frame.e);
                 } else {
                     this.cbs[id](null, frame.b);
                 }
-                this.clear(id);
+                this._clear(id);
             }
         }
     },
 
-    clear: function(id) {
+    _clear: function(id) {
         if(this.cbs[id]) { delete this.cbs[id]; }
         if(this.timeouts[id]) {
             clearTimeout(this.timeouts[id]);
@@ -137,10 +137,10 @@ Client.prototype = {
         }
     },
 
-    error: function(id) {
+    _error: function(id, error) {
         if(this.cbs[id]) {
-            this.cbs[id]("timeout");
-            this.clear(id);
+            this.cbs[id](error);
+            this._clear(id);
         }
     }
 
