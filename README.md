@@ -1,8 +1,8 @@
 # Request/response for socket.io
 
-Emulates request/response pattern in socket.io. Browser side can also behave as server.
+Emulates request/response pattern in socket.io. You can also choose to make your Node.js app a client, and make browser a server.
 
-On client:
+On "client" side:
 
 ```js
 var Client = require("socket.io-reqres").Client;
@@ -15,6 +15,8 @@ client.request("myMethod", "Hello", function(err, response) {
     console.log(err, response);
 });
 ```
+
+On "server" side:
 
 ```js
 

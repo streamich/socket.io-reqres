@@ -1,6 +1,6 @@
 {
     "name": "socket.io-reqres",
-    "version": "0.0.3",
+    "version": "0.0.6",
     "description": "socket.io request/response emulator.",
     "main": "./index",
     "repository": {
