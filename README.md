@@ -13,7 +13,7 @@ client.setSocket(socket);
 
 client.request("myMethod", "Hello", function(err, response) {
     console.log(err, response);
-}));
+});
 ```
 
 ```js
