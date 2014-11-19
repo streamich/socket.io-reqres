@@ -19,10 +19,9 @@ client.request("myMethod", "Hello", function(err, response) {
 On "server" side:
 
 ```js
-
 var Server = require("socket.io-reqres").Server;
 
-var server = new Server();
+var server = new Server;
 server.use("myMethod", function(data, send) {
     send(data + " world");
 });
@@ -36,7 +35,7 @@ server.setSocket(socket);
 
 - `new Server(name)` - optional server name, defaults to `""`.
 - `Server.setSocket(socket)` - set socket.io socket object.
-- `Server.use(method, send)` - register RPC method.
+- `Server.use(method, callback)` - register RPC method.
 - `new Client(name, timeout)` - optional server name, defaults to `""`. Optional timeout in ms.
 - `Client.setSocket(socket)` - set socket.io socket object.
 - `Client.request(method, data, callback)` - send request to the server.
